@@ -8,13 +8,15 @@
 <meta name="description" content="Katalog portofolio Farroya Arabic Design: logo Arab dan Islami, logo brand, wedding, kaligrafi custom, dan desain lainnya.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="top"><a class="logo" href="#/">Farroya <span>Arabic Design</span></a><nav><a href="#/">Beranda</a><a href="#/katalog">Katalog</a></nav></header>
+<header class="top"><a class="wm" href="#/">Farroya<small>ARABIC DESIGN</small></a></header>
 <main id="app"><p class="load">Memuat katalog...</p></main>
-<footer>Farroya Arabic Design<br><small>Harga, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</small></footer>
+<footer>Farroya Arabic Design<br>Harga akhir, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</footer>
+<a class="fab wa" target="_blank" rel="noopener" aria-label="Konsultasi WhatsApp">WA</a>
+<nav class="nav"><a data-r="" href="#/">Beranda</a><a data-r="paket" href="#/paket">Paket</a><a data-r="katalog" href="#/katalog">Katalog</a><a class="wa" target="_blank" rel="noopener">Chat</a></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
@@ -28,22 +30,37 @@ const cn=id=>(D.cats.find(c=>c.id===id)||{}).nama||"";
 const catName=w=>[cn(w.category_id),cn(w.subcategory_id)].filter(Boolean).join(", ");
 
 async function load(){
-  const [c,s,w,t]=await Promise.all([
+  const [c,s,w,t,pg,pt]=await Promise.all([
     sb.from("categories").select("*").order("urutan"),
     sb.from("styles").select("*").order("nama"),
     sb.from("works").select("*,work_styles(style_id),work_packages(*)").eq("status","tampil").order("dibuat",{ascending:false}),
-    sb.from("settings").select("*")]);
-  const e=c.error||s.error||w.error||t.error; if(e)throw e;
+    sb.from("settings").select("*"),
+    sb.from("package_groups").select("*").order("urutan"),
+    sb.from("package_tiers").select("*").eq("aktif",true).order("urutan")]);
+  const e=c.error||s.error||w.error||t.error||pg.error||pt.error; if(e)throw e;
   const set=Object.fromEntries(t.data.map(x=>[x.kunci,x.nilai]));
-  D={cats:c.data,styles:s.data,works:w.data,wa:set.whatsapp_number||C.wa};
+  D={cats:c.data,styles:s.data,works:w.data,wa:set.whatsapp_number||C.wa,groups:pg.data.map(g=>({...g,tiers:pt.data.filter(x=>x.group_id===g.id)})).filter(g=>g.tiers.length)};
 }
 
+const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
+const mulai=g=>{const p=g.tiers.filter(t=>t.harga!=null).map(t=>t.harga);return p.length?"Mulai dari "+rp(Math.min(...p)):"Konfirmasi melalui WhatsApp"};
+const gcard=g=>`<a class="gc" href="#/paket/${esc(g.slug)}"><span class="ic">&#10022;</span><div><h3>${esc(g.nama)}</h3><p>${esc(g.deskripsi||"")}</p><b>${mulai(g)}</b><small>${g.tiers.length} pilihan paket</small></div><i>&#8250;</i></a>`;
 const card=w=>`<a class="card" href="#/karya/${w.id}"><div class="ph"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></div><h3>${esc(w.judul)}</h3><p>${esc(catName(w))}</p></a>`;
+
+function paket(slug){
+  if(!slug){app.innerHTML=`<section><h2>Paket dan harga</h2>${D.groups.length?D.groups.map(gcard).join(""):'<p class="mut">Daftar paket sedang disiapkan. Silakan tanyakan lewat WhatsApp.</p>'}</section>`;return}
+  const g=D.groups.find(x=>x.slug===slug);
+  if(!g){app.innerHTML=`<section><p class="mut">Paket tidak ditemukan.</p><a class="btn" href="#/paket">Lihat semua paket</a></section>`;return}
+  app.innerHTML=`<a class="back" href="#/paket">Semua paket</a><section class="panel"><h1>${esc(g.nama)}</h1><p>${esc(g.deskripsi||"")}</p><b class="from">${mulai(g)}</b></section>
+  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div><ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul><a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">Konsultasi paket ini</a></article>`).join("")}
+  ${g.katalog_query?`<a class="btn wide" href="#/katalog?${g.katalog_query}">Lihat contoh karya</a>`:""}
+  <p class="note">Harga akhir, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</p></section>`;
+}
 
 function home(){
   const top=D.cats.filter(c=>!c.parent_id);
   app.innerHTML=`<section class="hero"><p class="sm">Farroya Arabic Design</p><h1>Logo dan kaligrafi Arab yang berkarakter</h1><p>Desain identitas visual bernuansa Arab dan Islami untuk pesantren, brand, wedding, dan kebutuhan khusus Anda.</p><div class="row"><a class="btn gold" href="#/katalog">Lihat katalog</a><a class="btn ghost" target="_blank" rel="noopener" href="${wa(hi+"saya ingin konsultasi desain.")}">Konsultasi WhatsApp</a></div></section>
-  <section><h2>Kategori layanan</h2><div class="cats">${top.map(c=>`<a class="cat" href="#/katalog?k=${c.slug}"><b>${esc(c.nama)}</b><small>${esc(D.cats.filter(s=>s.parent_id===c.id).map(s=>s.nama).join(", "))}</small></a>`).join("")}</div></section>
+  ${D.groups.length?`<section><h2>Paket dan harga</h2>${D.groups.map(gcard).join("")}</section>`:""}<section><h2>Kategori layanan</h2><div class="cats">${top.map(c=>`<a class="cat" href="#/katalog?k=${c.slug}"><b>${esc(c.nama)}</b><small>${esc(D.cats.filter(s=>s.parent_id===c.id).map(s=>s.nama).join(", "))}</small></a>`).join("")}</div></section>
   <section><h2>Karya terbaru</h2>${D.works.length?`<div class="grid">${D.works.slice(0,6).map(card).join("")}</div><a class="btn" href="#/katalog">Lihat semua karya</a>`:`<p class="mut">Katalog sedang disiapkan. Silakan konsultasi langsung lewat WhatsApp.</p>`}</section>`;
 }
 
@@ -82,9 +99,10 @@ function detail(id){
 function route(){
   const[path,qs]=location.hash.slice(1).split("?"),p=new URLSearchParams(qs||""),m=(path||"/").split("/");
   window.scrollTo(0,0);
-  if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else home();
+  document.querySelectorAll(".nav a[data-r]").forEach(a=>a.classList.toggle("on",a.dataset.r===(m[1]||"")||(m[1]==="karya"&&a.dataset.r==="katalog")));
+  if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else home();
 }
-load().then(()=>{route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
+load().then(()=>{document.querySelectorAll(".wa").forEach(a=>a.href=wa(hi+"saya ingin konsultasi desain."));route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
 </script>
 </body>
 </html>
