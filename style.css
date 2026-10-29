@@ -20,8 +20,8 @@ section{margin:24px 0}
 .btn.gold{background:linear-gradient(135deg,var(--g1),var(--g2));border-color:var(--g2);color:#3a2704}
 .btn.ghost{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4);color:#fff}
 .btn.wide{display:block;margin-top:14px}
-.gc{display:flex;align-items:center;gap:14px;padding:18px;border-radius:26px;margin-bottom:12px}
-.gc>div{flex:1}.gc p{opacity:.8;font-size:.85rem;margin:2px 0 0}
+.gc{display:block;padding:18px;border-radius:26px;margin-bottom:12px}
+.gt{display:flex;align-items:center;gap:14px}.gx{flex:1}.gc p{opacity:.8;font-size:.85rem;margin:2px 0 0}
 .gc b{display:block;margin-top:8px;font-size:1.35rem;color:var(--g1)}
 .gc small{opacity:.75;font-size:.8rem}
 .gc i{font-style:normal;font-size:2rem;opacity:.7}
@@ -35,8 +35,6 @@ section{margin:24px 0}
 .tier ul,.det ul{padding:0}
 .tier li{list-style:none;position:relative;padding-left:24px;margin:5px 0}
 .tier li::before{content:"\2713";position:absolute;left:0;color:var(--g2);font-weight:700}
-.strip{overflow-x:auto;border-radius:22px;background:#0d0d0d;-webkit-overflow-scrolling:touch}
-.strip img{display:block;height:200px;width:auto;max-width:none}
 .pr.t{font-size:1.05rem;font-weight:600}
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cat{display:block;padding:14px;border:1px solid var(--line);border-left:4px solid var(--g2);border-radius:18px;background:#fff}
@@ -69,3 +67,8 @@ footer{text-align:center;color:var(--mut);font-size:.8rem;padding:10px 16px 130p
 .fab{position:fixed;right:18px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:9;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--g1),var(--g2));color:#3a2704;font-weight:700;box-shadow:0 8px 18px rgba(0,0,0,.25)}
 a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--g2);outline-offset:2px}
 @media(min-width:700px){.cats,.grid{grid-template-columns:repeat(3,1fr)}h1{font-size:2.4rem}.hero{padding:44px}}
+.hl{display:flex;gap:8px;margin-top:14px}
+.hl img{flex:1;min-width:0;height:84px;object-fit:cover;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:#0a0a0a}
+.hlg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hlg img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:18px;border:1px solid var(--line);background:#0a0a0a}
+@media(min-width:700px){.hlg{grid-template-columns:repeat(3,1fr)}.hl img{height:130px}}
