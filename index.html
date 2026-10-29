@@ -10,6 +10,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+img{max-width:100%}
+.th{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 4px}
+.th img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;border:1px solid #dbe6e1;cursor:zoom-in}
+.th small{grid-column:1/-1;color:#62776f;font-size:.78rem}
+.hi{margin:0 0 12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(232,195,115,.3),rgba(196,145,58,.2));border:1px solid #c4913a;font-weight:600;color:#5b3d06}
+.tier:has(.hi){border-color:#c4913a}
+.lb{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(5,25,20,.92)}
+.lb img{max-width:100%;max-height:100%;border-radius:16px}
+</style>
 </head>
 <body>
 <header class="top"><a class="wm" href="#/">Farroya<small>ARABIC DESIGN</small></a></header>
@@ -57,7 +67,7 @@ function paket(slug){
   if(!g){app.innerHTML=`<section><p class="mut">Paket tidak ditemukan.</p><a class="btn" href="#/paket">Lihat semua paket</a></section>`;return}
   app.innerHTML=`<a class="back" href="#/paket">Semua paket</a><section class="panel"><h1>${esc(g.nama)}</h1><p>${esc(g.deskripsi||"")}</p><b class="from">${mulai(g)}</b></section>
   ${hl(g,9).length&&!g.tiers.some(t=>tierImgs(g,t).length)?`<section><h2>Contoh hasil</h2><div class="hlg">${hl(g,9).map(s=>`<img src="${s}" alt="Contoh logo ${esc(g.nama)}">`).join("")}</div></section>`:""}
-  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr${t.harga!=null?"":" t"}">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div>${t.sorotan?`<p class="hi">${esc(t.sorotan)}</p>`:""}<ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>${tierImgs(g,t).map(s=>`<img class="tp" src="${s}" alt="Contoh hasil ${esc(g.nama)}, ${esc(t.nama)}">`).join("")}<a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">${t.harga!=null?"Konsultasi paket ini":"Tanya harga lewat WhatsApp"}</a></article>`).join("")}
+  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr${t.harga!=null?"":" t"}">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div>${t.sorotan?`<p class="hi">${esc(t.sorotan)}</p>`:""}<ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>${tierImgs(g,t).length?`<div class="th">${tierImgs(g,t).map(s=>`<img class="zm" src="${s}" alt="Contoh hasil ${esc(g.nama)}, ${esc(t.nama)}">`).join("")}<small>Ketuk foto untuk memperbesar</small></div>`:""}<a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">${t.harga!=null?"Konsultasi paket ini":"Tanya harga lewat WhatsApp"}</a></article>`).join("")}
   ${g.katalog_query?`<a class="btn wide" href="#/katalog?${g.katalog_query}">Lihat contoh karya</a>`:""}
   <p class="note">Harga akhir, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</p></section>`;
 }
@@ -107,6 +117,7 @@ function route(){
   document.querySelectorAll(".nav a[data-r]").forEach(a=>a.classList.toggle("on",a.dataset.r===(m[1]||"")||(m[1]==="karya"&&a.dataset.r==="katalog")));
   if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else home();
 }
+document.addEventListener("click",e=>{const i=e.target.closest("img.zm");if(!i)return;const o=document.createElement("div");o.className="lb";o.innerHTML=`<img src="${i.src}" alt="${esc(i.alt)}">`;o.onclick=()=>o.remove();document.body.appendChild(o)});
 load().then(()=>{document.querySelectorAll(".wa").forEach(a=>a.href=wa(hi+"saya ingin konsultasi desain."));route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
 </script>
 <script src="wedding.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
