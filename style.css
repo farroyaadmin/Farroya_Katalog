@@ -35,6 +35,9 @@ section{margin:24px 0}
 .tier ul,.det ul{padding:0}
 .tier li{list-style:none;position:relative;padding-left:24px;margin:5px 0}
 .tier li::before{content:"\2713";position:absolute;left:0;color:var(--g2);font-weight:700}
+.strip{overflow-x:auto;border-radius:22px;background:#0d0d0d;-webkit-overflow-scrolling:touch}
+.strip img{display:block;height:200px;width:auto;max-width:none}
+.pr.t{font-size:1.05rem;font-weight:600}
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cat{display:block;padding:14px;border:1px solid var(--line);border-left:4px solid var(--g2);border-radius:18px;background:#fff}
 .cat b{display:block;line-height:1.25}

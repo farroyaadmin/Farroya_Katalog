@@ -44,7 +44,8 @@ async function load(){
 
 const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
 const mulai=g=>{const p=g.tiers.filter(t=>t.harga!=null).map(t=>t.harga);return p.length?"Mulai dari "+rp(Math.min(...p)):"Konfirmasi melalui WhatsApp"};
-const gcard=g=>`<a class="gc" href="#/paket/${esc(g.slug)}"><span class="ic">&#10022;</span><div><h3>${esc(g.nama)}</h3><p>${esc(g.deskripsi||"")}</p><b>${mulai(g)}</b><small>${g.tiers.length} pilihan paket</small></div><i>&#8250;</i></a>`;
+const gcard=g=>`<a class="gc" href="#/paket/${esc(g.slug)}"><span class="ic">&#10022;</span><div><h3>${esc(g.nama)}</h3><p>${esc(g.deskripsi||"")}</p><b>${mulai(g)}</b><small>${g.tiers.length} ${g.tiers.some(t=>t.harga!=null)?"pilihan paket":"jenis layanan"}</small></div><i>&#8250;</i></a>`;
+const showcase=()=>window.HASIL&&HASIL.length?`<section><h2>Hasil karya pilihan</h2><div class="strip">${HASIL.map((s,i)=>`<img src="${s}" alt="Contoh hasil desain logo Farroya Arabic Design ${i+1}">`).join("")}</div><p class="note">Geser untuk melihat karya lainnya.</p></section>`:"";
 const card=w=>`<a class="card" href="#/karya/${w.id}"><div class="ph"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></div><h3>${esc(w.judul)}</h3><p>${esc(catName(w))}</p></a>`;
 
 function paket(slug){
@@ -52,7 +53,7 @@ function paket(slug){
   const g=D.groups.find(x=>x.slug===slug);
   if(!g){app.innerHTML=`<section><p class="mut">Paket tidak ditemukan.</p><a class="btn" href="#/paket">Lihat semua paket</a></section>`;return}
   app.innerHTML=`<a class="back" href="#/paket">Semua paket</a><section class="panel"><h1>${esc(g.nama)}</h1><p>${esc(g.deskripsi||"")}</p><b class="from">${mulai(g)}</b></section>
-  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div><ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul><a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">Konsultasi paket ini</a></article>`).join("")}
+  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr${t.harga!=null?"":" t"}">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div><ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul><a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">${t.harga!=null?"Konsultasi paket ini":"Tanya harga lewat WhatsApp"}</a></article>`).join("")}
   ${g.katalog_query?`<a class="btn wide" href="#/katalog?${g.katalog_query}">Lihat contoh karya</a>`:""}
   <p class="note">Harga akhir, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</p></section>`;
 }
@@ -60,7 +61,8 @@ function paket(slug){
 function home(){
   const top=D.cats.filter(c=>!c.parent_id);
   app.innerHTML=`<section class="hero"><p class="sm">Farroya Arabic Design</p><h1>Logo dan kaligrafi Arab yang berkarakter</h1><p>Desain identitas visual bernuansa Arab dan Islami untuk pesantren, brand, wedding, dan kebutuhan khusus Anda.</p><div class="row"><a class="btn gold" href="#/katalog">Lihat katalog</a><a class="btn ghost" target="_blank" rel="noopener" href="${wa(hi+"saya ingin konsultasi desain.")}">Konsultasi WhatsApp</a></div></section>
-  ${D.groups.length?`<section><h2>Paket dan harga</h2>${D.groups.map(gcard).join("")}</section>`:""}<section><h2>Kategori layanan</h2><div class="cats">${top.map(c=>`<a class="cat" href="#/katalog?k=${c.slug}"><b>${esc(c.nama)}</b><small>${esc(D.cats.filter(s=>s.parent_id===c.id).map(s=>s.nama).join(", "))}</small></a>`).join("")}</div></section>
+  <section><h2>Karya pilihan</h2><div class="strip" tabindex="0" aria-label="Galeri karya pilihan"><img src="karya-pilihan.jpg" width="7200" height="356" alt="Kumpulan contoh logo Arab dan Islami karya Farroya Arabic Design"></div><p class="note">Geser ke samping untuk melihat lebih banyak karya.</p></section>
+  ${showcase()}${D.groups.length?`<section><h2>Paket dan harga</h2>${D.groups.map(gcard).join("")}</section>`:""}<section><h2>Kategori layanan</h2><div class="cats">${top.map(c=>`<a class="cat" href="#/katalog?k=${c.slug}"><b>${esc(c.nama)}</b><small>${esc(D.cats.filter(s=>s.parent_id===c.id).map(s=>s.nama).join(", "))}</small></a>`).join("")}</div></section>
   <section><h2>Karya terbaru</h2>${D.works.length?`<div class="grid">${D.works.slice(0,6).map(card).join("")}</div><a class="btn" href="#/katalog">Lihat semua karya</a>`:`<p class="mut">Katalog sedang disiapkan. Silakan konsultasi langsung lewat WhatsApp.</p>`}</section>`;
 }
 
@@ -104,5 +106,6 @@ function route(){
 }
 load().then(()=>{document.querySelectorAll(".wa").forEach(a=>a.href=wa(hi+"saya ingin konsultasi desain."));route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
 </script>
+<script src="hasil.js" async onload="D&&!location.hash.slice(2)&&route()"></script>
 </body>
 </html>
