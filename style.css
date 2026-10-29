@@ -72,3 +72,6 @@ a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(
 .hlg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .hlg img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:18px;border:1px solid var(--line);background:#0a0a0a}
 @media(min-width:700px){.hlg{grid-template-columns:repeat(3,1fr)}.hl img{height:130px}}
+.hi{margin:0 0 12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(232,195,115,.3),rgba(196,145,58,.2));border:1px solid var(--g2);font-weight:600;color:#5b3d06}
+.tier:has(.hi){border-color:var(--g2)}
+.tp{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:18px;border:1px solid var(--line);margin-top:10px}

@@ -45,7 +45,9 @@ async function load(){
 const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
 const mulai=g=>{const p=g.tiers.filter(t=>t.harga!=null).map(t=>t.harga);return p.length?"Mulai dari "+rp(Math.min(...p)):"Konfirmasi melalui WhatsApp"};
 const HL={majelis:[0,3,9,1,12],brand:[5,6,11,10,14],lembaga:[2,4,8,7]};
-const hl=(g,k)=>window.HASIL&&HL[g.slug]?HL[g.slug].slice(0,k).map(i=>HASIL[i]).filter(Boolean):[];
+const hl=(g,k)=>(g.slug==="wedding"?(window.WEDDING||[]):window.HASIL&&HL[g.slug]?HL[g.slug].map(i=>HASIL[i]).filter(Boolean):[]).slice(0,k);
+const TP={"wedding:150000":[0],"wedding:100000":[1],"wedding:50000":[2,3]};
+const tierImgs=(g,t)=>window.WEDDING?(TP[g.slug+":"+t.harga]||[]).map(i=>WEDDING[i]).filter(Boolean):[];
 const gcard=g=>{const t=hl(g,3);return `<a class="gc" href="#/paket/${esc(g.slug)}"><div class="gt"><span class="ic">&#10022;</span><div class="gx"><h3>${esc(g.nama)}</h3><p>${esc(g.deskripsi||"")}</p><b>${mulai(g)}</b><small>${g.tiers.length} pilihan paket</small></div><i>&#8250;</i></div>${t.length?`<div class="hl">${t.map(s=>`<img src="${s}" alt="Contoh logo ${esc(g.nama)}">`).join("")}</div>`:""}</a>`};
 const card=w=>`<a class="card" href="#/karya/${w.id}"><div class="ph"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></div><h3>${esc(w.judul)}</h3><p>${esc(catName(w))}</p></a>`;
 
@@ -54,8 +56,8 @@ function paket(slug){
   const g=D.groups.find(x=>x.slug===slug);
   if(!g){app.innerHTML=`<section><p class="mut">Paket tidak ditemukan.</p><a class="btn" href="#/paket">Lihat semua paket</a></section>`;return}
   app.innerHTML=`<a class="back" href="#/paket">Semua paket</a><section class="panel"><h1>${esc(g.nama)}</h1><p>${esc(g.deskripsi||"")}</p><b class="from">${mulai(g)}</b></section>
-  ${hl(g,9).length?`<section><h2>Contoh hasil</h2><div class="hlg">${hl(g,9).map(s=>`<img src="${s}" alt="Contoh logo ${esc(g.nama)}">`).join("")}</div></section>`:""}
-  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr${t.harga!=null?"":" t"}">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div><ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul><a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">${t.harga!=null?"Konsultasi paket ini":"Tanya harga lewat WhatsApp"}</a></article>`).join("")}
+  ${hl(g,9).length&&!g.tiers.some(t=>tierImgs(g,t).length)?`<section><h2>Contoh hasil</h2><div class="hlg">${hl(g,9).map(s=>`<img src="${s}" alt="Contoh logo ${esc(g.nama)}">`).join("")}</div></section>`:""}
+  <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr${t.harga!=null?"":" t"}">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div>${t.sorotan?`<p class="hi">${esc(t.sorotan)}</p>`:""}<ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>${tierImgs(g,t).map(s=>`<img class="tp" src="${s}" alt="Contoh hasil ${esc(g.nama)}, ${esc(t.nama)}">`).join("")}<a class="btn gold wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">${t.harga!=null?"Konsultasi paket ini":"Tanya harga lewat WhatsApp"}</a></article>`).join("")}
   ${g.katalog_query?`<a class="btn wide" href="#/katalog?${g.katalog_query}">Lihat contoh karya</a>`:""}
   <p class="note">Harga akhir, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</p></section>`;
 }
@@ -107,6 +109,7 @@ function route(){
 }
 load().then(()=>{document.querySelectorAll(".wa").forEach(a=>a.href=wa(hi+"saya ingin konsultasi desain."));route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
 </script>
+<script src="wedding.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
 <script src="hasil.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
 </body>
 </html>
