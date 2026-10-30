@@ -76,7 +76,7 @@ main.in{padding-bottom:48px}main.in section{margin:26px 0}
 .th img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;border:1px solid var(--ln);cursor:zoom-in}
 .th small{grid-column:1/-1;color:var(--mt);font-size:.78rem}
 .hlg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hlg img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px;border:1px solid var(--ln);background:#0a0a0a}
-.lb{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(5,15,32,.94)}.lb img{max-width:100%;max-height:100%;border-radius:16px}
+.lb{position:fixed;inset:0;z-index:30;overflow:auto;padding:16px;display:flex;justify-content:center;align-items:flex-start;background:rgba(5,15,32,.95)}.lbi{width:100%;max-width:560px;margin:auto;display:flex;flex-direction:column;gap:6px}.lbi img{width:100%;max-height:72vh;object-fit:contain;border-radius:16px;background:#0d1f3a}.lbi .btn{margin-top:10px}.gh{margin:30px 0 12px;font-size:1.6rem}.card[data-id]{cursor:pointer}
 input[type=search]{width:100%;min-height:48px;padding:0 18px;border:1px solid var(--ln);border-radius:999px;background:rgba(255,255,255,.06);color:#fff;font:inherit;margin-bottom:12px}
 input::placeholder{color:var(--mt)}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
@@ -109,9 +109,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 <script>
 const C=window.FAROYA,sb=supabase.createClient(C.url,C.key),app=document.getElementById("app"),hd=document.getElementById("top");
 const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const img=p=>p?sb.storage.from("karya").getPublicUrl(p).data.publicUrl:"";
+const img=p=>!p?"":/^katalog-/.test(p)?((window.KATALOG||{})[p]||p):sb.storage.from("karya").getPublicUrl(p).data.publicUrl;
 const hi="Assalamu'alaikum Farroya Arabic Design, ";
-let D;
+let D,KP;const needKat=()=>KP||(KP=new Promise(r=>{if(window.KATALOG)return r();const s=document.createElement("script");s.src="katalog.js";s.onload=s.onerror=()=>r();document.head.appendChild(s)}));
 const wa=t=>`https://wa.me/${D.wa}?text=${encodeURIComponent(t)}`;
 const cn=id=>(D.cats.find(c=>c.id===id)||{}).nama||"";
 const catName=w=>[cn(w.category_id),cn(w.subcategory_id)].filter(Boolean).join(", ");
@@ -135,11 +135,12 @@ async function load(){
   D={cats:c.data,styles:s.data,works:w.data,wa:set.whatsapp_number||C.wa,groups:pg.data.map(g=>({...g,tiers:pt.data.filter(x=>x.group_id===g.id)})).filter(g=>g.tiers.length)};
 }
 const gcard=g=>{const t=hl(g,3);return `<a class="gc" href="#/paket/${esc(g.slug)}"><h3>${esc(g.nama)}</h3><p>${esc(g.deskripsi||"")}</p><b>${mulai(g)}</b><small>${g.tiers.length} pilihan paket</small>${t.length?`<div class="hl">${t.map(s=>`<img src="${s}" alt="Contoh logo ${esc(g.nama)}">`).join("")}</div>`:""}<span class="go">Lihat detail paket &rsaquo;</span></a>`};
-const card=w=>`<a class="card" href="#/karya/${w.id}"><div class="ph"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></div><h3>${esc(w.judul)}</h3><p>${esc(catName(w))}</p></a>`;
+const card=w=>`<div class="card" data-id="${w.id}" role="button" tabindex="0"><div class="ph"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></div><h3>${esc(w.judul)}</h3><p>${esc(catName(w))}</p></div>`;
 const adv=()=>`<section class="sec alt"><div class="in adv">${[["pen","Desain Profesional","Estetis, elegan, dan penuh makna"],["clock","Proses Cepat","Tersedia pilihan Paket Kilat"],["shield","Revisi Fleksibel","Sesuai ketentuan setiap paket"],["head","Layanan Ramah","Konsultasi lewat WhatsApp"]].map(([k,t,s])=>`<div><svg viewBox="0 0 24 24">${IC[k]}</svg><b>${t}</b><small>${s}</small></div>`).join("")}</div></section>`;
 
 function home(){
-  const port=D.works.length?D.works.slice(0,6).map(w=>`<a href="#/karya/${w.id}"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></a>`):(window.HASIL?PORT.map(i=>HASIL[i]).filter(Boolean).map((s,i)=>`<img src="${s}" alt="Contoh hasil desain logo ${i+1}">`):[]);
+  const tiles=window.HASIL?PORT.map(i=>HASIL[i]).filter(Boolean).map((s,i)=>`<img src="${s}" alt="Contoh hasil desain logo ${i+1}">`):[];
+  const port=tiles.length?tiles:D.works.slice(0,6).map(w=>`<a href="#/karya/${w.id}"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></a>`);
   app.innerHTML=`<section class="hero"><i class="mark"></i><div class="in"><p class="ey">Farroya Arabic Design</p><h1>Logo dan Kaligrafi Arab yang Berkarakter</h1><p class="lead">Desain identitas visual bernuansa Arab dan Islami untuk pesantren, brand, wedding, dan kebutuhan khusus Anda.</p><div class="row"><a class="btn pri" href="#/katalog">Lihat Katalog &rarr;</a><a class="btn wa" target="_blank" rel="noopener">Konsultasi WhatsApp</a></div></div></section>
   ${D.groups.length?`<section class="sec alt"><div class="in ed"><div><p class="ey">Paket dan harga</p><h2>Logo &amp; Kaligrafi</h2><p class="mut">Pilih paket yang sesuai dengan kebutuhan Anda. Setiap desain dibuat dengan detail, makna, dan kualitas terbaik.</p><a class="btn" href="#/paket">Lihat Semua Paket &rsaquo;</a></div><div class="gcs">${D.groups.map(gcard).join("")}</div></div></section>`:""}
   ${port.length?`<section class="silver"><div class="in"><div class="hd"><div><p class="ey">Portofolio</p><h2>Contoh Hasil Karya</h2></div><a class="lk" href="#/katalog">Lihat Katalog Lengkap &rsaquo;</a></div><div class="pg6">${port.join("")}</div></div></section>`:""}
@@ -159,20 +160,11 @@ function paket(slug){
 }
 
 function katalog(p){
-  const k=D.cats.find(c=>c.slug===p.get("k")&&!c.parent_id),s=D.cats.find(c=>c.slug===p.get("s")&&c.parent_id),g=p.get("g");
-  const L=o=>{const q=new URLSearchParams({...Object.fromEntries(p),...o});for(const[x,v]of[...q])if(!v)q.delete(x);const z=q.toString();return"#/katalog"+(z?"?"+z:"")};
-  const chip=(t,h,on)=>`<a class="chip${on?" on":""}" href="${h}">${esc(t)}</a>`;
-  const subs=k?D.cats.filter(c=>c.parent_id===k.id):[];
-  app.innerHTML=`<section><h1>Katalog karya</h1><p class="mut" style="margin:8px 0 16px">Semua karya tampil tanpa harus memilih filter.</p><input id="q" type="search" placeholder="Cari karya" autocomplete="off">
-  <div class="chips">${chip("Semua",L({k:"",s:""}),!k)}${D.cats.filter(c=>!c.parent_id).map(c=>chip(c.nama,L({k:c.slug,s:""}),k&&k.id===c.id)).join("")}</div>
-  ${subs.length?`<div class="chips">${chip("Semua "+k.nama,L({s:""}),!s)}${subs.map(c=>chip(c.nama,L({s:c.slug}),s&&s.id===c.id)).join("")}</div>`:""}
-  <details${g?" open":""}><summary>Filter gaya (opsional)</summary><div class="chips">${chip("Semua gaya",L({g:""}),!g)}${D.styles.map(x=>chip(x.nama,L({g:x.id}),g===x.id)).join("")}</div></details>
-  <div id="res"></div></section>`;
-  const q=document.getElementById("q"),res=document.getElementById("res");
-  const draw=()=>{const t=q.value.trim().toLowerCase();
-    const r=D.works.filter(w=>(!k||w.category_id===k.id)&&(!s||w.subcategory_id===s.id)&&(!g||w.work_styles.some(x=>x.style_id===g))&&(!t||(w.judul+" "+(w.deskripsi||"")).toLowerCase().includes(t)));
-    res.innerHTML=r.length?`<div class="grid">${r.map(card).join("")}</div>`:`<p class="mut">${D.works.length?"Belum ada karya yang cocok. Coba filter lain atau tanyakan lewat WhatsApp.":"Katalog sedang disiapkan. Silakan konsultasi langsung lewat WhatsApp."}</p>`};
-  q.oninput=draw;draw();
+  const k=D.cats.find(c=>c.slug===p.get("k")&&!c.parent_id),s=D.cats.find(c=>c.slug===p.get("s")&&c.parent_id);
+  const ws=D.works.filter(w=>(!k||w.category_id===k.id)&&(!s||w.subcategory_id===s.id)),tops=D.cats.filter(c=>!c.parent_id);
+  const grp=(t,l)=>l.length?`<h2 class="gh">${esc(t)}</h2><div class="grid">${l.map(card).join("")}</div>`:"";
+  const body=tops.map(c=>grp(c.nama,ws.filter(w=>w.category_id===c.id))).join("")+grp("Lainnya",ws.filter(w=>!tops.some(c=>c.id===w.category_id)));
+  app.innerHTML=`<section><h1>Contoh karya</h1><p class="mut" style="margin:8px 0 14px">${k?esc(s?s.nama:k.nama)+". ":""}Ketuk gambar untuk memperbesar.</p>${k?`<a class="btn" href="#/katalog">Lihat semua karya</a>`:""}${body||'<p class="mut">Katalog sedang disiapkan. Silakan konsultasi langsung lewat WhatsApp.</p>'}</section>`;
 }
 
 function detail(id){
@@ -198,11 +190,14 @@ function route(){
   const[path,qs]=location.hash.slice(1).split("?"),p=new URLSearchParams(qs||""),m=(path||"/").split("/");
   window.scrollTo(0,0);hd.classList.remove("open");app.className=m[1]?"in":"";
   document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.r===(m[1]||"")||(m[1]==="karya"&&a.dataset.r==="katalog")));
-  if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else if(m[1]==="tentang")tentang();else if(m[1]==="kontak")kontak();else home();
-  fixWa();
+  const h=location.hash,go=()=>{if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else if(m[1]==="tentang")tentang();else if(m[1]==="kontak")kontak();else home();fixWa()};
+  if(m[1]==="katalog"||m[1]==="karya"){app.innerHTML='<p class="load">Memuat katalog...</p>';needKat().then(()=>{if(location.hash===h)go()})}else go();
 }
 document.getElementById("bg").onclick=()=>hd.classList.toggle("open");
-document.addEventListener("click",e=>{const i=e.target.closest("img.zm");if(!i)return;const o=document.createElement("div");o.className="lb";o.innerHTML=`<img src="${i.src}" alt="${esc(i.alt)}">`;o.onclick=()=>o.remove();document.body.appendChild(o)});
+const lb=h=>{const o=document.createElement("div");o.className="lb";o.innerHTML=`<div class="lbi">${h}<button class="btn lbx">Tutup</button></div>`;o.onclick=e=>{if(e.target===o||e.target.closest(".lbx"))o.remove()};document.body.appendChild(o)};
+document.addEventListener("click",e=>{const z=e.target.closest("img.zm");if(z)return lb(`<img src="${z.src}" alt="${esc(z.alt)}">`);
+  const c=e.target.closest(".card[data-id]");if(!c)return;const w=D.works.find(x=>x.id===c.dataset.id);if(!w)return;
+  lb(`<img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}"><h3>${esc(w.judul)}</h3><p class="sm">${esc(catName(w))}</p>${w.deskripsi?`<p class="desc">${esc(w.deskripsi)}</p>`:""}<a class="btn pri wide" target="_blank" rel="noopener" href="${wa(hi+'saya tertarik dengan karya "'+w.judul+'" (kategori '+catName(w)+"). Boleh saya konsultasi?")}">Konsultasi lewat WhatsApp</a>`)});
 load().then(()=>{route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
 </script>
 <script src="wedding.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
