@@ -95,11 +95,32 @@ details{margin-bottom:12px}summary{color:var(--sv);font-weight:600;padding:8px 0
 .ft{display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px 20px calc(40px + env(safe-area-inset-bottom));text-align:center;border-top:1px solid var(--ln);background:linear-gradient(180deg,rgba(5,15,32,.88),rgba(5,15,32,.97)),url(latar.jpg) 70% 85%/cover,var(--n0)}
 .ft .mark{width:44px;height:68px}.slg{font-size:1.5rem;font-style:italic;font-weight:500;color:var(--sv)}.ft .row{justify-content:center}.ft .row .btn{flex:0 1 160px}.ft small{max-width:42ch;color:var(--mt);font-size:.78rem}
 a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--sv);outline-offset:2px}
+.nav a[data-r="vip-alumni"]{color:#d6b56a}.nav a.on[data-r="vip-alumni"]{color:#f3e2b0;border-color:#d6b56a}
+.vh{position:relative;overflow:hidden;text-align:center;padding:64px 0 56px;background:linear-gradient(180deg,rgba(5,15,32,.84),rgba(5,15,32,.7) 50%,rgba(5,15,32,.96)),url(latar.jpg) 65% 30%/cover,var(--n1);border-bottom:1px solid rgba(214,181,106,.4)}
+.vh>.mark{position:absolute;left:50%;top:14px;width:170px;aspect-ratio:559/872;transform:translateX(-50%);opacity:.09;pointer-events:none}
+.vh .in{position:relative}.vh .ey{justify-content:center}.vh .ey::after{display:none}.gdt{color:#d6b56a!important}
+.vh h1{font-size:1.75rem;letter-spacing:.08em;line-height:1.3;margin:6px 0 18px}
+.orn{height:1px;width:150px;margin:0 auto 22px;background:linear-gradient(90deg,transparent,#d6b56a,transparent)}
+.d20{display:flex;flex-direction:column;align-items:center;line-height:1}
+.d20 span{font-size:.95rem;letter-spacing:.5em;padding-left:.5em;color:#d3deee}
+.d20 b{margin:8px 0;font:600 5.4rem var(--hf);background:linear-gradient(180deg,#f6e8bc,#c9a24f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.sub{margin:12px 0 16px;font:italic 500 1.5rem var(--hf);color:var(--sv)}
+.vh .lead{max-width:56ch;margin:0 auto 26px;color:#d3deee}
+.btn.gold{background:linear-gradient(180deg,#f6e8bc,#c9a24f);border-color:#e8d08f;color:#2a1d04;letter-spacing:.08em;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.vg{display:grid;gap:12px}
+.vc{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:20px;border:1px solid var(--ln);border-left:3px solid #d6b56a;background:linear-gradient(150deg,rgba(70,110,170,.3),rgba(10,27,54,.9))}
+.vc i{min-width:34px;font:600 1.8rem var(--hf);font-style:normal;color:#d6b56a}
+.vc b{display:block;font:600 1.25rem var(--hf);line-height:1.2;color:#fff}.vc small{color:var(--mt);font-size:.88rem}
+.vt ul{display:grid;gap:10px;padding:0;list-style:none}
+.vt li{position:relative;padding:14px 16px 14px 46px;border:1px solid var(--ln);border-radius:16px;background:rgba(255,255,255,.04);color:#d3deee}
+.vt li::before{content:"\2713";position:absolute;left:18px;color:#d6b56a;font-weight:700}
+@media(min-width:700px){.vg{grid-template-columns:1fr 1fr}.vh h1{font-size:2.5rem}}
+@media(min-width:980px){.vg{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
 <header class="top" id="top"><div class="bar"><a class="brand" href="#/"><i class="mark"></i><span class="wm">FARROYA<small>ARABIC DESIGN</small></span></a>
-<nav class="nav" id="nav"><a data-r="" href="#/">Beranda</a><a data-r="paket" href="#/paket">Paket</a><a data-r="katalog" href="#/katalog">Katalog</a><a data-r="tentang" href="#/tentang">Tentang</a><a data-r="kontak" href="#/kontak">Kontak</a></nav>
+<nav class="nav" id="nav"><a data-r="" href="#/">Beranda</a><a data-r="paket" href="#/paket">Paket</a><a data-r="katalog" href="#/katalog">Katalog</a><a data-r="vip-alumni" href="#/vip-alumni">VIP Alumni</a><a data-r="tentang" href="#/tentang">Tentang</a><a data-r="kontak" href="#/kontak">Kontak</a></nav>
 <a class="ic2 wa" target="_blank" rel="noopener" aria-label="Konsultasi WhatsApp"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/></svg></a>
 <button class="ic2 burger" id="bg" aria-label="Menu"><i></i></button></div></header>
 <main id="app"><p class="load">Memuat katalog...</p></main>
@@ -185,12 +206,22 @@ function detail(id){
 function tentang(){app.innerHTML=`<section><p class="ey">Tentang</p><h1>Farroya Arabic Design</h1><p class="desc">Farroya Arabic Design adalah layanan desain logo dan kaligrafi Arab. Kami membantu pesantren, lembaga, majelis, brand, hingga pasangan wedding memiliki identitas visual yang bernuansa Arab dan Islami.</p><a class="btn pri wide" href="#/paket">Lihat Paket dan Harga</a></section>${adv()}`}
 function kontak(){app.innerHTML=`<section><p class="ey">Kontak</p><h1>Konsultasi Desain</h1><p class="desc">Ceritakan kebutuhan Anda lewat WhatsApp. Admin akan membantu menjelaskan paket dan detail pengerjaannya.</p><p class="sm">WhatsApp: +${esc(D.wa)}</p><a class="btn pri wide wa" target="_blank" rel="noopener">Konsultasi WhatsApp</a>${C.tiktok?`<a class="btn wide" target="_blank" rel="noopener" href="${esc(C.tiktok)}">TikTok</a>`:""}</section>`;fixWa()}
 
+const VIP=[["Ez-Zitouna University","Tunisia"],["Al-Ahgaff University","Yaman"],["Pondok Pesantren Al-Badriyyah","Mranggen, Demak"],["Yayasan Futuhiyyah","Mranggen, Demak"],["Yayasan Pondok Pesantren Al-Haromain","Jepara"],["Pondok Pesantren Azzainiyyah","Sukabumi"],["Ma’had Baitul Arqom Al-Islami","Kabupaten Bandung"]];
+const VIPT=["Diskon sebesar 20% dari harga jasa desain logo.","Berlaku untuk seluruh paket desain logo Farroya Arabic Design.","Khusus alumni dari institusi yang tercantum.","Tidak berlaku untuk harga cetak, produk fisik, maupun biaya produksi.","Pelanggan wajib menyebutkan asal institusi saat melakukan pemesanan.","Ketentuan pembayaran dan pengerjaan tetap mengikuti kebijakan Farroya."];
+const VIPMSG="Assalamu’alaikum Farroya Arabic Design.\n\nSaya ingin menggunakan fasilitas Alumni Privilege diskon 20%.\n\nAsal institusi:\nNama:\nPaket desain logo yang diminati:\n\nMohon informasi lebih lanjut. Terima kasih.";
+function vip(){
+  document.title="FARROYA VIP – Alumni Privilege | Farroya Arabic Design";
+  const cta=`<a class="btn gold" target="_blank" rel="noopener" href="${wa(VIPMSG)}">KLAIM DISKON ALUMNI</a>`;
+  app.innerHTML=`<section class="vh"><i class="mark"></i><div class="in"><p class="ey gdt">Farroya VIP</p><h1>FARROYA VIP – ALUMNI PRIVILEGE</h1><div class="orn"></div><p class="d20"><span>SPECIAL</span><b>20%</b><span>DISCOUNT</span></p><p class="sub">A Special Appreciation for Our Alumni.</p><p class="lead">Sebagai bentuk apresiasi dan penghormatan Farroya Arabic Design kepada keluarga besar alumni lembaga pendidikan tertentu, kami menghadirkan penawaran khusus berupa diskon 20% untuk jasa desain logo.</p>${cta}</div></section>
+  <section class="sec alt"><div class="in"><p class="ey">Institusi penerima</p><h2>Daftar Institusi Privilege</h2><div class="vg">${VIP.map(([nm,lk],i)=>`<div class="vc"><i>${String(i+1).padStart(2,"0")}</i><div><b>${esc(nm)}</b><small>${esc(lk)}</small></div></div>`).join("")}</div></div></section>
+  <section class="sec"><div class="in vt"><p class="ey">Syarat dan ketentuan</p><h2>Ketentuan</h2><ul>${VIPT.map(t=>`<li>${esc(t)}</li>`).join("")}</ul><div class="row" style="margin-top:26px">${cta}<a class="btn" href="#/paket">Lihat Paket Logo</a></div></div></section>`;
+}
 function fixWa(){document.querySelectorAll(".wa").forEach(a=>a.href=wa(hi+"saya ingin konsultasi desain."));const t=document.getElementById("tt");if(C.tiktok){t.href=C.tiktok;t.hidden=false}}
 function route(){
   const[path,qs]=location.hash.slice(1).split("?"),p=new URLSearchParams(qs||""),m=(path||"/").split("/");
-  window.scrollTo(0,0);hd.classList.remove("open");app.className=m[1]?"in":"";
+  window.scrollTo(0,0);hd.classList.remove("open");document.title="Farroya Arabic Design | Logo dan Kaligrafi Arab";app.className=m[1]?"in":"";
   document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.r===(m[1]||"")||(m[1]==="karya"&&a.dataset.r==="katalog")));
-  const h=location.hash,go=()=>{if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else if(m[1]==="tentang")tentang();else if(m[1]==="kontak")kontak();else home();fixWa()};
+  const h=location.hash,go=()=>{if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else if(m[1]==="vip-alumni")vip();else if(m[1]==="tentang")tentang();else if(m[1]==="kontak")kontak();else home();fixWa()};
   if(m[1]==="katalog"||m[1]==="karya"){app.innerHTML='<p class="load">Memuat katalog...</p>';needKat().then(()=>{if(location.hash===h)go()})}else go();
 }
 document.getElementById("bg").onclick=()=>hd.classList.toggle("open");
