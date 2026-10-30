@@ -2,5 +2,6 @@
 window.FAROYA = {
   url: "https://hoslipwfqiemvjupzgba.supabase.co",
   key: "sb_publishable_IhmZUIk7-gtgIyh5478fkg_N78pLLuq",
-  wa: "6282114107675"
+  wa: "6282114107675",
+  tiktok: "https://www.tiktok.com/@farroya_arabicdesign"
 };
