@@ -116,6 +116,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 .vt li::before{content:"\2713";position:absolute;left:18px;color:#d6b56a;font-weight:700}
 @media(min-width:700px){.vg{grid-template-columns:1fr 1fr}.vh h1{font-size:2.5rem}}
 @media(min-width:980px){.vg{grid-template-columns:repeat(3,1fr)}}
+.sel{background:linear-gradient(180deg,#07142a,var(--n0));border-top:1px solid rgba(214,181,106,.4)}
+.sg{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:176px 176px;gap:10px;margin:20px 0 4px}
+.sg img{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--ln)}.sg img:first-child{grid-row:span 2}
+.sel .row{margin-top:22px}
+.card.sc .ph{aspect-ratio:3/4}.card.sc img{object-fit:cover}
+.cw{display:block;width:100%;max-width:520px;margin:0 auto 14px;border-radius:18px;border:1px solid var(--ln);cursor:zoom-in}
+.tg{margin:14px 0 20px}
+@media(min-width:700px){.sg{grid-template-rows:240px 240px}}
 </style>
 </head>
 <body>
@@ -130,9 +138,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 <script>
 const C=window.FAROYA,sb=supabase.createClient(C.url,C.key),app=document.getElementById("app"),hd=document.getElementById("top");
 const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const img=p=>!p?"":/^katalog-/.test(p)?((window.KATALOG||{})[p]||p):sb.storage.from("karya").getPublicUrl(p).data.publicUrl;
+const img=p=>!p?"":/^(katalog|selempang)-/.test(p)?((window.KATALOG||{})[p]||(window.SELEMPANG||{})[p]||p):sb.storage.from("karya").getPublicUrl(p).data.publicUrl;
 const hi="Assalamu'alaikum Farroya Arabic Design, ";
-let D,KP;const needKat=()=>KP||(KP=new Promise(r=>{if(window.KATALOG)return r();const s=document.createElement("script");s.src="katalog.js";s.onload=s.onerror=()=>r();document.head.appendChild(s)}));
+let D,KP;const loadJs=(v,f)=>new Promise(r=>{if(window[v])return r();const s=document.createElement("script");s.src=f;s.onload=s.onerror=()=>r();document.head.appendChild(s)});const needKat=()=>KP||(KP=Promise.all([loadJs("KATALOG","katalog.js"),loadJs("SELEMPANG","selempang.js")]));
 const wa=t=>`https://wa.me/${D.wa}?text=${encodeURIComponent(t)}`;
 const cn=id=>(D.cats.find(c=>c.id===id)||{}).nama||"";
 const catName=w=>[cn(w.category_id),cn(w.subcategory_id)].filter(Boolean).join(", ");
@@ -159,12 +167,25 @@ const gcard=g=>{const t=hl(g,3);return `<a class="gc" href="#/paket/${esc(g.slug
 const card=w=>`<div class="card" data-id="${w.id}" role="button" tabindex="0"><div class="ph"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></div><h3>${esc(w.judul)}</h3><p>${esc(catName(w))}</p></div>`;
 const adv=()=>`<section class="sec alt"><div class="in adv">${[["pen","Desain Profesional","Estetis, elegan, dan penuh makna"],["clock","Proses Cepat","Tersedia pilihan Paket Kilat"],["shield","Revisi Fleksibel","Sesuai ketentuan setiap paket"],["head","Layanan Ramah","Konsultasi lewat WhatsApp"]].map(([k,t,s])=>`<div><svg viewBox="0 0 24 24">${IC[k]}</svg><b>${t}</b><small>${s}</small></div>`).join("")}</div></section>`;
 
+const selWorks=()=>{const c=D.cats.find(x=>x.slug==="selempang-wisuda");return c?D.works.filter(w=>w.subcategory_id===c.id):[]};
+const selMsg=hi+"saya ingin konsultasi selempang wisuda (Model Cairo, khat Tsuluts).\n\nNama lembaga:\nWarna kain yang diminati:\nKhat yang diminati:\nTeks/logo yang ingin dibordir:\n\nMohon informasi lebih lanjut. Terima kasih.";
+const selDesc="Model Cairo dan khat Tsuluts. Kaligrafi khat asli, bukan font Arab biasa, dan khat bisa direquest sesuai keinginan Anda.";
+const selHi=()=>{const w=selWorks().slice(0,3);const im=window.SELEMPANG&&w.length?`<div class="sg">${w.map(x=>`<img src="${esc(img(x.gambar_path))}" alt="${esc(x.judul)}">`).join("")}</div>`:"";return `<section class="sec sel"><div class="in"><p class="ey gdt">Sorotan</p><h2>Selempang Arab Next Level</h2><p class="mut">${selDesc}</p>${im}<div class="row"><a class="btn pri" href="#/selempang">Lihat Koleksi Selempang</a><a class="btn" target="_blank" rel="noopener" href="${wa(selMsg)}">Konsultasi Selempang</a></div></div></section>`};
+function selempang(){
+  document.title="Selempang Arab Next Level | Farroya Arabic Design";
+  const w=selWorks(),cta=`<a class="btn gold" target="_blank" rel="noopener" href="${wa(selMsg)}">Konsultasi Selempang</a>`;
+  const WRN=["Hitam","Biru Elektrik","Navy","Putih","Taupe (abu kecoklatan)","Khaki","Coksu","Taro","Coklat tua","Sage","Hijau daun","Army","Pink Fanta","Maroon"];
+  app.innerHTML=`<section class="panel"><p class="ey gdt">Layanan cetak</p><h1>Selempang Arab Next Level</h1><p>${selDesc}</p><div class="tags tg">${["Model Cairo","Khat Tsuluts","Khat bisa request","Bukan font Arab biasa","Pilihan warna kain"].map(t=>`<span>${t}</span>`).join("")}</div>${cta}</section>
+  <section><h2>Koleksi selempang</h2>${w.length?`<div class="grid">${w.map(x=>card(x).replace('class="card"','class="card sc"')).join("")}</div>`:'<p class="mut">Koleksi sedang disiapkan. Silakan konsultasi langsung lewat WhatsApp.</p>'}</section>
+  <section><h2>Pilihan warna kain</h2><img class="zm cw" src="${esc(img("selempang-warna.jpg"))}" alt="Pilihan warna kain selempang"><div class="tags">${WRN.map(t=>`<span>${t}</span>`).join("")}</div><p class="note">Ketuk gambar untuk memperbesar. Warna di layar dapat sedikit berbeda dengan aslinya.</p></section>
+  <section class="panel"><h2>Harga dan pemesanan</h2><p>Harga selempang menyesuaikan kebutuhan dan dapat berubah, jadi silakan konsultasikan langsung lewat WhatsApp.</p>${cta}</section>`;
+}
 function home(){
   const tiles=window.HASIL?PORT.map(i=>HASIL[i]).filter(Boolean).map((s,i)=>`<img src="${s}" alt="Contoh hasil desain logo ${i+1}">`):[];
   const port=tiles.length?tiles:D.works.slice(0,6).map(w=>`<a href="#/karya/${w.id}"><img src="${esc(img(w.gambar_path))}" alt="${esc(w.judul)}" loading="lazy"></a>`);
   app.innerHTML=`<section class="hero"><i class="mark"></i><div class="in"><p class="ey">Farroya Arabic Design</p><h1>Logo dan Kaligrafi Arab yang Berkarakter</h1><p class="lead">Desain identitas visual bernuansa Arab dan Islami untuk pesantren, brand, wedding, dan kebutuhan khusus Anda.</p><div class="row"><a class="btn pri" href="#/katalog">Lihat Katalog &rarr;</a><a class="btn wa" target="_blank" rel="noopener">Konsultasi WhatsApp</a></div></div></section>
   ${D.groups.length?`<section class="sec alt"><div class="in ed"><div><p class="ey">Paket dan harga</p><h2>Logo &amp; Kaligrafi</h2><p class="mut">Pilih paket yang sesuai dengan kebutuhan Anda. Setiap desain dibuat dengan detail, makna, dan kualitas terbaik.</p><a class="btn" href="#/paket">Lihat Semua Paket &rsaquo;</a></div><div class="gcs">${D.groups.map(gcard).join("")}</div></div></section>`:""}
-  ${port.length?`<section class="silver"><div class="in"><div class="hd"><div><p class="ey">Portofolio</p><h2>Contoh Hasil Karya</h2></div><a class="lk" href="#/katalog">Lihat Katalog Lengkap &rsaquo;</a></div><div class="pg6">${port.join("")}</div></div></section>`:""}
+  ${selHi()}${port.length?`<section class="silver"><div class="in"><div class="hd"><div><p class="ey">Portofolio</p><h2>Contoh Hasil Karya</h2></div><a class="lk" href="#/katalog">Lihat Katalog Lengkap &rsaquo;</a></div><div class="pg6">${port.join("")}</div></div></section>`:""}
   ${adv()}`;
   fixWa();
 }
@@ -176,7 +197,7 @@ function paket(slug){
   app.innerHTML=`<a class="back" href="#/paket">&lsaquo; Semua paket</a><section class="panel"><h1>${esc(g.nama)}</h1><p>${esc(g.deskripsi||"")}</p><b class="from">${mulai(g)}</b></section>
   ${hl(g,9).length&&!g.tiers.some(t=>tierImgs(g,t).length)?`<section><h2>Contoh hasil</h2><div class="hlg">${hl(g,9).map(s=>`<img src="${s}" alt="Contoh logo ${esc(g.nama)}">`).join("")}</div></section>`:""}
   <section>${g.tiers.map(t=>`<article class="tier"><div class="tt"><h3>${esc(t.nama)}</h3>${t.badge?`<span class="bd${t.badge==="Kilat"?" k":""}">${esc(t.badge)}</span>`:""}</div><div class="pr${t.harga!=null?"":" t"}">${t.harga!=null?rp(t.harga):"Konfirmasi melalui WhatsApp"}</div>${t.sorotan?`<p class="hi">${esc(t.sorotan)}</p>`:""}<ul>${(t.rincian||"").split("\n").filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>${tierImgs(g,t).length?`<div class="th">${tierImgs(g,t).map(s=>`<img class="zm" src="${s}" alt="Contoh hasil ${esc(g.nama)}, ${esc(t.nama)}">`).join("")}<small>Ketuk foto untuk memperbesar</small></div>`:""}<a class="btn pri wide" target="_blank" rel="noopener" href="${wa(hi+"saya tertarik dengan "+t.nama+" ("+g.nama+"). Boleh saya konsultasi?")}">${t.harga!=null?"Konsultasi paket ini":"Tanya harga lewat WhatsApp"}</a></article>`).join("")}
-  ${g.katalog_query?`<a class="btn wide" href="#/katalog?${g.katalog_query}">Lihat contoh karya</a>`:""}
+  ${g.katalog_query?`<a class="btn wide" href="#/katalog?${g.katalog_query}">Lihat contoh karya</a>`:""}${g.slug==="cetak"?`<a class="btn pri wide" href="#/selempang">Lihat Koleksi Selempang</a>`:""}
   <p class="note">Harga akhir, ketersediaan, dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.</p></section>`;
 }
 
@@ -221,8 +242,8 @@ function route(){
   const[path,qs]=location.hash.slice(1).split("?"),p=new URLSearchParams(qs||""),m=(path||"/").split("/");
   window.scrollTo(0,0);hd.classList.remove("open");document.title="Farroya Arabic Design | Logo dan Kaligrafi Arab";app.className=m[1]?"in":"";
   document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.r===(m[1]||"")||(m[1]==="karya"&&a.dataset.r==="katalog")));
-  const h=location.hash,go=()=>{if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else if(m[1]==="vip-alumni")vip();else if(m[1]==="tentang")tentang();else if(m[1]==="kontak")kontak();else home();fixWa()};
-  if(m[1]==="katalog"||m[1]==="karya"){app.innerHTML='<p class="load">Memuat katalog...</p>';needKat().then(()=>{if(location.hash===h)go()})}else go();
+  const h=location.hash,go=()=>{if(m[1]==="paket")paket(m[2]);else if(m[1]==="katalog")katalog(p);else if(m[1]==="karya")detail(m[2]);else if(m[1]==="vip-alumni")vip();else if(m[1]==="selempang")selempang();else if(m[1]==="tentang")tentang();else if(m[1]==="kontak")kontak();else home();fixWa()};
+  if(["katalog","karya","selempang"].includes(m[1])){app.innerHTML='<p class="load">Memuat katalog...</p>';needKat().then(()=>{if(location.hash===h)go()})}else go();
 }
 document.getElementById("bg").onclick=()=>hd.classList.toggle("open");
 const lb=h=>{const o=document.createElement("div");o.className="lb";o.innerHTML=`<div class="lbi">${h}<button class="btn lbx">Tutup</button></div>`;o.onclick=e=>{if(e.target===o||e.target.closest(".lbx"))o.remove()};document.body.appendChild(o)};
@@ -232,6 +253,7 @@ document.addEventListener("click",e=>{const z=e.target.closest("img.zm");if(z)re
 load().then(()=>{route();addEventListener("hashchange",route)}).catch(e=>{console.error(e);app.innerHTML=`<p class="load">Katalog belum bisa dimuat. Muat ulang halaman, atau hubungi admin jika masalah berlanjut.</p>`});
 </script>
 <script src="wedding.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
+<script src="selempang.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
 <script src="hasil.js" async onload="D&&!/katalog/.test(location.hash)&&route()"></script>
 </body>
 </html>
